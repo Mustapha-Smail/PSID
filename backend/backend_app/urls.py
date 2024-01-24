@@ -5,7 +5,7 @@ urlpatterns = [
     path('restaurants-country/', plotly_histogram, name='plotly_histogram'),
     path('price-diet/', diet_adaptation, name='diet_adaptation'),
     path('popularity-diet/', popularity_diet, name='popularity_diet'),
-    path('distribution-cuisine/', plotly_bar_chart, name='plotly_bar_chart'),
+    path('distribution-restaurants/', distrib_restaurant_régimes, name='distrib_restaurant_régimes'),
 
     # Bakari 
     path('plot-service/', box_plot_service, name='box_plot_service'),
