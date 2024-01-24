@@ -27,6 +27,12 @@ const Home = () => {
                 <Grid xs={12} md={6}>
                     <CardGraph url={`distribution-satisfaction`} />
                 </Grid>
+                <Grid xs={12} md={12}>
+                    <CardGraph url={`note-moyenne-restaurants`} />
+                </Grid>
+                {/* <Grid xs={12} md={12}>
+                    <CardGraph url={`note-top-eight`} />
+                </Grid> */}
             </Grid>
         </>
     )
