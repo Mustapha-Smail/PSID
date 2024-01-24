@@ -9,7 +9,7 @@ cd backend
 - installer les librairies
 
 ```{shell}
-pip install django djangorestframework matplotlib plotly python-dotenv pandas
+pip install django djangorestframework matplotlib plotly python-dotenv pandas graphviz numpy 
 ```
 
 - aller dans le fichier .env **backend/.env** et modifier le path de ton fichier csv

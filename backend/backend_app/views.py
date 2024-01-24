@@ -6,6 +6,8 @@ import json
 from django.http import JsonResponse
 import pandas as pd
 from .data.load_data import data_frame 
+import numpy as np
+from collections import defaultdict
 
 def plotly_histogram(request):
     country_counts = data_frame['country'].value_counts()
@@ -24,7 +26,7 @@ def plotly_histogram(request):
         """
         })
 
-
+# Thomas 
 def diet_adaptation(request):  
     df = data_frame
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
@@ -99,7 +101,7 @@ def distrib_restaurant_régimes(request):
         "content": "Number of Restaurants per Country"
         })
 
-
+# BAKARI 
 def plotly_bar_chart(request):
     # Compter le nombre de restaurants pour chaque type de cuisine
     france_df = data_frame[data_frame['country'] == 'France']
@@ -182,7 +184,6 @@ def box_plot_value(request):
         boxgap=0.2,
         boxgroupgap=0.3
     )
-
     # Convertir le graphique en JSON
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -221,3 +222,65 @@ def box_plot_atmosphere(request):
         "title": "Evalutation de l'ambiance par niveau de prix",
         "content": "Number of Restaurants per Country"
         })
+
+# Kemo 
+
+def noteMoyenneNbreRestau(request): 
+    # adding manually the country code - required for the geographical mapping with plotly
+    countries_dict = {'Austria': 'AUT', 'Belgium': 'BEL', 'Bulgaria': 'BGR', 'Croatia': 'HRV', 'Czech Republic': 'CZE',
+                    'Denmark': 'DNK', 'England': 'GBR', 'Finland': 'FIN', 'France': 'FRA', 'Germany': 'DEU',
+                    'Greece': 'GRC', 'Hungary': 'HUN', 'Ireland': 'IRL', 'Italy': 'ITA', 'Northern Ireland': 'GBR',
+                    'Poland': 'POL', 'Portugal': 'PRT', 'Romania': 'ROU', 'Scotland': 'GBR', 'Slovakia': 'SVK',
+                    'Spain': 'ESP', 'Sweden': 'SWE', 'The Netherlands': 'NLD', 'Wales': 'GBR'}
+    data_frame['country_code'] = data_frame['country'].map(countries_dict).fillna(data_frame['country'])
+
+    # average price in euro
+    data_frame['minimum_range'] = pd.to_numeric(data_frame['price_range'].to_string().split('-')[0].replace('€', '').replace(',', ''), errors='coerce')
+    data_frame['maximum_range'] = pd.to_numeric(data_frame['price_range'].to_string().split('-')[1].replace('€', '').replace(',', ''), errors='coerce')
+    data_frame['avg_price'] = (data_frame['minimum_range'] + data_frame['maximum_range'])/2
+
+    # aggregating the data to find insights from the TripAdvisor dataset
+    agg_countries_df = data_frame.groupby('country').agg(
+        total_restaurants=pd.NamedAgg(column='restaurant_link', aggfunc=np.size),
+        mean_rating=pd.NamedAgg(column='avg_rating', aggfunc=np.mean),
+        mean_food=pd.NamedAgg(column='food', aggfunc=np.mean),
+        mean_service=pd.NamedAgg(column='service', aggfunc=np.mean),
+        mean_values=pd.NamedAgg(column='value', aggfunc=np.mean),
+        mean_athmosphere=pd.NamedAgg(column='atmosphere', aggfunc=np.mean),
+        total_reviews=pd.NamedAgg(column='total_reviews_count', aggfunc=np.sum),
+        mean_reviews_n=pd.NamedAgg(column='total_reviews_count', aggfunc=np.mean),
+        median_reviews_n=pd.NamedAgg(column='total_reviews_count', aggfunc=np.median),
+        mean_price=pd.NamedAgg(column='avg_price', aggfunc=np.mean),
+        median_price=pd.NamedAgg(column='avg_price', aggfunc=np.median),
+        open_days_per_week=pd.NamedAgg(column='open_days_per_week', aggfunc=np.mean),
+        open_hours_per_week=pd.NamedAgg(column='open_hours_per_week', aggfunc=np.mean),
+        working_shifts_per_week=pd.NamedAgg(column='working_shifts_per_week', aggfunc=np.mean)
+    ).reset_index(level=0).sort_values(by='total_restaurants', ascending=False)
+    for col in agg_countries_df.columns[1:]:
+        agg_countries_df[col] = round(agg_countries_df[col], 3)
+    agg_countries_df['country_code'] = agg_countries_df['country'].map(countries_dict).fillna(agg_countries_df['country'])
+
+    # Bubble plot with the relationship between total_votes and avg_vote for the European countries
+    fig = go.Figure(data=go.Scatter(x=agg_countries_df['total_restaurants'], y=agg_countries_df['mean_rating'],
+    mode='markers+text', marker=dict(size=agg_countries_df['median_reviews_n'].astype('float64'),
+                                    color=agg_countries_df['median_reviews_n']),
+    text=agg_countries_df['country'], textposition='top center', textfont=dict(size=9),
+    customdata=agg_countries_df['median_reviews_n'],
+    hoverlabel=dict(namelength=0), # removes the trace number off to the side of the tooltip box
+    hovertemplate='<b>%{text}</b>:<br>%{x:,} total restaurants<br>%{y:.2f} mean rating<br>%{customdata} median revies'))
+    
+    fig.update_layout(title='Note moyenne et nombre total de restaurants dans les 20 premières villes européennes (taille en fonction de la médiane)', template='plotly_white',
+                    title_x=0.5, legend=dict(yanchor='bottom', y=-0.15, xanchor='left', x=0, font=dict(size=10), orientation='h'),
+                    autosize=True)
+    fig['layout']['xaxis']['title'] = 'Total Restaurants'
+    fig['layout']['yaxis']['title'] = 'Note Moyenne'
+
+    # Convertir le graphique en JSON
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return JsonResponse({
+        "data": graphJSON, 
+        "title": "Note moyenne et nombre total de restaurants dans les 20 premières villes européennes (taille en fonction de la médiane)",
+        "content": "Number of Restaurants per Country"
+    })
+

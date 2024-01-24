@@ -35,6 +35,12 @@ const Home = () => {
                         <CardGraph url={`plot-atmosphere`} />
                     </Grid>
                 </Grid>
+                <Grid xs={12} md={12}>
+                    <CardGraph url={`note-moyenne-restaurants`} />
+                </Grid>
+                {/* <Grid xs={12} md={12}>
+                    <CardGraph url={`note-top-eight`} />
+                </Grid> */}
             </Grid>
         </>
     )
