@@ -75,10 +75,10 @@ def diet_adaptation(request):
         "data": diet_adaptation, 
         "title": "Adaptations Diététiques dans les Restaurants par Pays",
         "content": """
-            Dans cette dataviz, on remarque la dominance de 3 pays dans lesquels les restaurants proposent des adaptations diététiques, L’Angleterre, l’Italie et l’Espagne.
-            L'Italie, l’Angleterre et l’Espagne sont les pays disposant du plus grand nombre de restaurant ayant des options végétariennes. En effet, leurs populations font partie de celle comptant le plus de végétarien en Europe (+ de 10%). On peut donc supposer que ces trois pays ont une culture culinaire contenant plus de plat végétarien que la normale comme les tapas végétariens en Espagne.
-            On remarque aussi qu'ils sont ceux ayant le plus de restaurant proposant plusieurs options. Par exemple l’Angleterre est le pays ayant le plus de restaurant proposant à la fois des options végan mais aussi des options végétariennes suivi de l'Italie et de l’Espagne. On peut expliquer la forte présence de restaurant ayant des adaptations diététiques par le tourisme qui y est présent.
-            On remarque de plus dans le graphe que dans tous les pays, l'adaptation diététiques la plus présente est l'option végétarienne. 5% de la population mondiale étant végétarienne les restaurants dans les zones de tourisme se doivent de proposer au moins 1 plat végétarien pour ne pas perdre de clientèle.
+            Dans cette dataviz, on remarque la dominance de 3 pays dans lesquels les restaurants proposent des adaptations diététiques, L’Angleterre, l’Italie et l’Espagne.<br>
+            L'Italie, l’Angleterre et l’Espagne sont les pays disposant du plus grand nombre de restaurant ayant des options végétariennes. En effet, leurs populations font partie de celle comptant le plus de végétarien en Europe (+ de 10%). On peut donc supposer que ces trois pays ont une culture culinaire contenant plus de plat végétarien que la normale comme les tapas végétariens en Espagne.<br>
+            On remarque aussi qu'ils sont ceux ayant le plus de restaurant proposant plusieurs options. Par exemple l’Angleterre est le pays ayant le plus de restaurant proposant à la fois des options végan mais aussi des options végétariennes suivi de l'Italie et de l’Espagne. On peut expliquer la forte présence de restaurant ayant des adaptations diététiques par le tourisme qui y est présent.<br>
+            On remarque de plus dans le graphe que dans tous les pays, l'adaptation diététiques la plus présente est l'option végétarienne. 5% de la population mondiale étant végétarienne les restaurants dans les zones de tourisme se doivent de proposer au moins 1 plat végétarien pour ne pas perdre de clientèle.<br>
             Pour finir on remarque que les pays dont les restaurants propose le moins d'adaptation diététiques sont les pays dont la culture culinaire est très fortement basée sur la viande comme le Portugal ou la Bulgarie.
 
         """
@@ -136,8 +136,12 @@ def distrib_restaurant_regimes(request):
 # Bakari 
 def plotly_bar_chart(request):
     df = data_frame.copy()
+    # Compter le nombre de restaurants par pays
+    restaurant_counts = df['country'].value_counts()
+    # Sélectionner les 8 pays ayant le plus grand nombre de restaurants
+    top8_countries = restaurant_counts.nlargest(8).index
     # Compter le nombre de restaurants pour chaque type de cuisine
-    france_df = df[df['country'] == 'France']
+    france_df = df[df['country'].isin(top8_countries)]
     cuisine_counts = france_df['cuisines'].value_counts().nlargest(10)
 
     # Filtrer le DataFrame pour inclure seulement les 10 types de cuisine les plus fréquents
@@ -155,7 +159,7 @@ def plotly_bar_chart(request):
 
     # Créer un graphique en barres avec un filtre de couleur basé sur la note moyenne
     fig = px.bar(grouped_data, x='cuisines', y='value', color='avg_rating',
-                title='Rapport Qualité-Prix des 10 Types de Cuisine les Plus Fréquents en France',
+                title='Rapport Qualité-Prix des 10 Types de Cuisine sur le Top 8',
                 labels={'cuisines' : 'Type de cuisine', 'value': 'Rapport Qualité-Prix moyen', 'avg_rating': 'Note Moyenne'})
 
     # Convertir le graphique en JSON
@@ -163,7 +167,7 @@ def plotly_bar_chart(request):
 
     return JsonResponse({
         "data": graphJSON,
-        "title": "Rapport Qualité-Prix des 10 Types de Cuisine les Plus Fréquents en France",
+        "title": "Rapport Qualité-Prix des 10 Types de Cuisine sur le Top 8",
         "content": "Number of Restaurants per Country"
         })
 

@@ -11,9 +11,14 @@ const PopupData = ({ close, content, title }) => {
         title={title && title}
       />
       <CardContent>
-        <Stack spacing={1} sx={{ width: '100%', height: '32rem', overflow: 'scroll' }}>
+        <Stack spacing={1} sx={{ width: '100%', height: '26rem', overflow: 'scroll' }}>
           <Typography>
-            {content && content}
+            {content && content.split('<br>').map(x => (
+              <Typography>
+                {x}
+                <br />
+              </Typography>
+            ))}
           </Typography>
         </Stack>
       </CardContent>

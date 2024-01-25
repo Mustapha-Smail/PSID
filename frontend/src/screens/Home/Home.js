@@ -23,10 +23,10 @@ const Home = () => {
                     <CardGraph url={`distribution-restaurants`} />
                 </Grid>
                 <Grid xs={12} md={6}>
-                    <CardGraph url={`distribution-satisfaction`} />
+                    <CardGraph url={`note-top-eight`} />
                 </Grid>
                 <Grid xs={12} md={6}>
-                    <CardGraph url={`note-top-eight`} />
+                    <CardGraph url={`distribution-satisfaction`} />
                 </Grid>
                 <Grid xs={12} md={12} container>
                     <Grid xs={12} md={4}>
