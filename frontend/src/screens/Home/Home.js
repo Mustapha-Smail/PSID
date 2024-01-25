@@ -1,14 +1,15 @@
 import React from 'react'
 import './Home.css'
 import Grid from '@mui/system/Unstable_Grid'
-import { TopNav, CardGraph } from '../../components'
+import { TopNav, CardGraph, CardDetails } from '../../components'
 
 const Home = () => {
 
     return (
         <>
             <TopNav />
-            <Grid container spacing={2}>
+            <Grid container spacing={2} p={5}>
+                <CardDetails url={`numbers`} />
                 <Grid xs={12} md={6}>
                     <CardGraph url={`restaurants-country`} />
                 </Grid>
@@ -24,6 +25,9 @@ const Home = () => {
                 <Grid xs={12} md={6}>
                     <CardGraph url={`distribution-satisfaction`} />
                 </Grid>
+                <Grid xs={12} md={6}>
+                    <CardGraph url={`note-top-eight`} />
+                </Grid>
                 <Grid xs={12} md={12} container>
                     <Grid xs={12} md={4}>
                         <CardGraph url={`plot-service`} />
@@ -38,9 +42,6 @@ const Home = () => {
                 <Grid xs={12} md={12}>
                     <CardGraph url={`note-moyenne-restaurants`} />
                 </Grid>
-                {/* <Grid xs={12} md={12}>
-                    <CardGraph url={`note-top-eight`} />
-                </Grid> */}
             </Grid>
         </>
     )

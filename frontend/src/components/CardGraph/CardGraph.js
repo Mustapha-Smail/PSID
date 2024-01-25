@@ -1,4 +1,4 @@
-import { CardContent, Divider, Typography, Card, CircularProgress, Alert, CardActions, Button, SvgIcon } from '@mui/material'
+import { CardContent, Divider, Card, CircularProgress, Alert, CardActions, Button, SvgIcon } from '@mui/material'
 import { Stack } from '@mui/system'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
@@ -47,10 +47,10 @@ const CardGraph = ({ url }) => {
                             <Plot
                                 data={plotData.data}
                                 layout={{
+                                    ...plotData.layout,
                                     autosize: true,
                                     title: plotData.layout.title,
                                     responsive: true,
-                                    // font: { size: 18 }
                                 }}
                                 useResizeHandler={true}
                                 config={{ responsive: true }} />
@@ -81,8 +81,6 @@ const CardGraph = ({ url }) => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        // maxHeight: '50%'
-
                     }}
                 >
                     {close => (

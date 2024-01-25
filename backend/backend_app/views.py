@@ -1,7 +1,7 @@
 import plotly
 import plotly.graph_objs as go
 import plotly.express as px
-import random
+import math
 import json
 from django.http import JsonResponse
 import pandas as pd
@@ -9,18 +9,42 @@ from .data.load_data import data_frame
 import numpy as np
 from collections import defaultdict
 
+# Numbers
+def numRestaurants(request): 
+    total_restaurants = round(len(data_frame), 2)
+    average_rating = round(data_frame['avg_rating'].mean(), 2)
+    total_reviews = round(data_frame['total_reviews_count'].sum(), 2)
+    
+    df = data_frame
+    df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
+    vegetarian_friendly_count = len(df['vegetarian_friendly'] == 'Y')
+    vegan_options_count = len(df['vegan_options'] == 'Y')
+    gluten_free_count = len(df['gluten_free'] == 'Y')
+
+    
+    summary_data = [
+        {"title": "Restaurants","value": total_restaurants},
+        {"title": "Note moyenne", "value": average_rating},
+        {"title": "Commentaires", "value": total_reviews},
+        {"title": "Végétarien", "value": vegetarian_friendly_count},
+        {"title": "Vegan", "value": vegan_options_count},
+        {"title": "Sans gluten", "value": gluten_free_count}
+    ]
+    return JsonResponse(summary_data, safe=False)
+
+# Graphs 
 def plotly_histogram(request):
     country_counts = data_frame['country'].value_counts()
 
     fig = px.bar(country_counts, x=country_counts.index, y=country_counts.values, labels={'x': 'Country', 'y': 'Number of Restaurants'})
-    fig.update_layout(title_text='Number of Restaurants per Country', xaxis_tickangle=-45)
+    fig.update_layout(title_text='Nombre de restaurants par pays', xaxis_tickangle=-45)
 
     # Convert the figure to JSON
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     return JsonResponse({
         "data": graphJSON, 
-        "title": "Number of Restaurants per Country",
+        "title": "Nombre de restaurants par pays",
         "content": """
             Nombre de restaurants par pays 
         """
@@ -79,12 +103,13 @@ def popularity_diet(request):
         """
         })
 
-def distrib_restaurant_régimes(request):
+def distrib_restaurant_regimes(request):
     df= data_frame
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].astype(int)
     df['total_adaptations'] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].sum(axis=1)
     grouped_df = df.groupby('country').agg({'total_adaptations': 'mean', 'latitude': 'first', 'longitude': 'first', 'restaurant_link': 'size'}).reset_index()
+    
     fig = px.scatter_geo(grouped_df, 
                     lat='latitude', 
                     lon='longitude',  
@@ -92,16 +117,20 @@ def distrib_restaurant_régimes(request):
                     size='restaurant_link',
                     scope='europe',
                     hover_name='country')
-
+    fig.update_geos(
+        visible=False, resolution=50, scope="europe",
+        showcountries=True, countrycolor="Black",
+        showsubunits=True, subunitcolor="Blue"
+    )
     fig.update_layout(title_text='Distribution des restaurants spécifiques aux régimes')
-    distrib_restaurant_régimes = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return JsonResponse({
-        "data": distrib_restaurant_régimes, 
+        "data": graphJSON, 
         "title": "Distribution des restaurants spécifiques aux régimes",
         "content": "Number of Restaurants per Country"
         })
 
-# BAKARI 
+# Bakari 
 def plotly_bar_chart(request):
     # Compter le nombre de restaurants pour chaque type de cuisine
     france_df = data_frame[data_frame['country'] == 'France']
@@ -262,7 +291,7 @@ def noteMoyenneNbreRestau(request):
 
     # Bubble plot with the relationship between total_votes and avg_vote for the European countries
     fig = go.Figure(data=go.Scatter(x=agg_countries_df['total_restaurants'], y=agg_countries_df['mean_rating'],
-    mode='markers+text', marker=dict(size=agg_countries_df['median_reviews_n'].astype('float64'),
+    mode='markers+text', marker=dict(size=(agg_countries_df['median_reviews_n'].astype('float64')*0.09),
                                     color=agg_countries_df['median_reviews_n']),
     text=agg_countries_df['country'], textposition='top center', textfont=dict(size=9),
     customdata=agg_countries_df['median_reviews_n'],
@@ -281,6 +310,70 @@ def noteMoyenneNbreRestau(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Note moyenne et nombre total de restaurants dans les 20 premières villes européennes (taille en fonction de la médiane)",
+        "content": "Number of Restaurants per Country"
+    })
+
+def round_decimals_up_or_down(direction:str, number:float, decimals:int=2):
+    if not isinstance(decimals, int):
+        raise TypeError('decimal places must be an integer')
+    elif decimals < 0:
+        raise ValueError('decimal places has to be 0 or more')
+    elif decimals == 0:
+        if direction == 'up':
+            return math.ceil(number)
+        elif direction == 'down':
+            return math.floor(number)
+        else:
+            raise ValueError('direction needs to be up or down')
+    factor = 10 ** decimals
+    if direction == 'up':
+        return math.ceil(number * factor) / factor
+    elif direction == 'down':
+        return math.floor(number * factor) / factor
+    else:
+        raise ValueError('direction needs to be up or down')
+
+def radar_chart(request):
+
+    # Compter le nombre de restaurants par pays
+    restaurant_counts = data_frame['country'].value_counts()
+
+    # Sélectionner les 8 pays ayant le plus grand nombre de restaurants
+    top8_countries = restaurant_counts.nlargest(8).index
+
+    country_agg_cols_dict = {
+        'country': 'Country',
+        'avg_rating': 'Rating',
+        'food': 'Food',
+        'service': 'Service',
+        'value': 'Value',
+        'atmosphere': 'Athmosphere'
+    }
+    top8_countries_df = data_frame[data_frame['country'].isin(top8_countries)]
+    top8_countries_df = top8_countries_df[list(country_agg_cols_dict.keys())]
+    top8_countries_df.rename(columns=country_agg_cols_dict, inplace=True)
+    # melting the various categories, so that the line_polar graph can be easily called
+    top8_countries_df = top8_countries_df.melt(id_vars=['Country'],
+                                            value_vars=['Rating', 'Food', 'Service', 'Value', 'Athmosphere'],
+                                            var_name='Category', 
+                                            value_name='AggValue'
+                                        )
+    top8_countries_df['AggValue'] = round(top8_countries_df['AggValue'], 3)
+
+    decimal_val = 1
+    max_countries_val = round_decimals_up_or_down(direction='up', number=top8_countries_df['AggValue'].max(), decimals=decimal_val)
+    min_countries_val = round_decimals_up_or_down(direction='down', number=top8_countries_df['AggValue'].min(), decimals=decimal_val)
+
+    # radar plot with plotly
+    fig = px.line_polar(top8_countries_df, r='AggValue', range_r=[min_countries_val, max_countries_val], theta='Category', color='Country', line_close=True, template='seaborn')
+    fig.update_layout(title_text='Notes Globales du top 8', title_x=0.5, title_y=0.97, margin=dict(l=80, r=10, t=40, b=10))
+
+    # Convertir le graphique en JSON
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return JsonResponse({
+        "data": graphJSON, 
+        "title": "Notes Globales du top 8",
         "content": "Number of Restaurants per Country"
     })
 
