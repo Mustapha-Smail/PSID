@@ -5,23 +5,21 @@ import math
 import json
 from django.http import JsonResponse
 import pandas as pd
-from .data.load_data import data_frame 
+from .data.load_data import data_frame
 import numpy as np
 from collections import defaultdict
 
 # Numbers
 def numRestaurants(request): 
-    total_restaurants = round(len(data_frame), 2)
-    average_rating = round(data_frame['avg_rating'].mean(), 2)
-    total_reviews = round(data_frame['total_reviews_count'].sum(), 2)
+    df = data_frame.copy()
+    total_restaurants = round(len(df), 2)
+    average_rating = round(df['avg_rating'].mean(), 2)
+    total_reviews = round(df['total_reviews_count'].sum(), 2)
     
-    df = data_frame
-    df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
-    vegetarian_friendly_count = len(df['vegetarian_friendly'] == 'Y')
-    vegan_options_count = len(df['vegan_options'] == 'Y')
-    gluten_free_count = len(df['gluten_free'] == 'Y')
+    vegetarian_friendly_count = int((df['vegetarian_friendly'] == 'Y').sum())
+    vegan_options_count = int((df['vegan_options'] == 'Y').sum())
+    gluten_free_count = int((df['gluten_free'] == 'Y').sum())
 
-    
     summary_data = [
         {"title": "Restaurants","value": total_restaurants},
         {"title": "Note moyenne", "value": average_rating},
@@ -34,9 +32,10 @@ def numRestaurants(request):
 
 # Graphs 
 def plotly_histogram(request):
-    country_counts = data_frame['country'].value_counts()
+    df = data_frame.copy()
+    country_counts = df['country'].value_counts()
 
-    fig = px.bar(country_counts, x=country_counts.index, y=country_counts.values, labels={'x': 'Country', 'y': 'Number of Restaurants'})
+    fig = px.bar(country_counts, x=country_counts.index, y=country_counts.values, labels={'country':'Pays', 'y': 'Restaurants'})
     fig.update_layout(title_text='Nombre de restaurants par pays', xaxis_tickangle=-45)
 
     # Convert the figure to JSON
@@ -52,7 +51,7 @@ def plotly_histogram(request):
 
 # Thomas 
 def diet_adaptation(request):  
-    df = data_frame
+    df = data_frame.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
 
     df['vegan_gluten_free'] = (df['vegan_options'] == True) & (df['gluten_free'] == True)
@@ -65,11 +64,11 @@ def diet_adaptation(request):
     df_grouped = df.groupby('country')[['vegetarian_friendly', 'vegan_options', 'gluten_free', 'vegan_gluten_free', 'vegetarian_gluten_free', 'vegan_vegetarian', 'vegan_gluten_free_vegetarian']].sum().reset_index()
 
     fig = px.bar(df_grouped, x='country', y=['vegetarian_friendly', 'vegan_options', 'gluten_free', 'vegan_gluten_free', 'vegetarian_gluten_free', 'vegan_vegetarian', 'vegan_gluten_free_vegetarian'],
-            labels={'country':'Pays', 'vegetarian_friendly':'Options Végétariennes', 'vegan_options':'Options Véganes', 'gluten_free':'Options sans gluten', 'vegan_gluten_free':'Options vegan et sans gluten','vegetarian_gluten_free':'Options vegetarienne et sans gluten', 'vegan_vegetarian':'Options vegan et vegetarienne','vegan_gluten_free_vegetarian':'Options vegan, vegetarienne et sans gluten' },
+            labels={'country':'Pays', 'vegetarian_friendly':'Options Végétariennes', 'vegan_options':'Options Véganes', 'gluten_free':'Options sans gluten', 'vegan_gluten_free':'Options vegan et sans gluten','vegetarian_gluten_free':'Options vegetarienne et sans gluten', 'vegan_vegetarian':'Options vegan et vegetarienne','vegan_gluten_free_vegetarian':'Options vegan, vegetarienne et sans gluten', 'value': 'Nombre de Restaurants' },
             title='Adaptations Diététiques dans les Restaurants par Pays')
 
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
-                showlegend=True)
+                showlegend=True, xaxis_tickangle=-45)
 
     diet_adaptation = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return JsonResponse({
@@ -86,12 +85,16 @@ def diet_adaptation(request):
         })
 
 def popularity_diet(request):
-    df = data_frame
+    df = data_frame.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].astype(int)
     df['total_adaptations'] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].sum(axis=1)
 
     fig = px.scatter(df, x='total_reviews_count', y='total_adaptations', color='avg_rating', title='Corrélation entre Popularité et adaptation diététique')
+    fig.update_layout(
+        xaxis_title='Nombre d\'Avis',
+        yaxis_title='Nombre d\'adaptation'
+    )
     popularity_diet = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return JsonResponse({
         "data": popularity_diet, 
@@ -104,7 +107,7 @@ def popularity_diet(request):
         })
 
 def distrib_restaurant_regimes(request):
-    df= data_frame
+    df= data_frame.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].astype(int)
     df['total_adaptations'] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].sum(axis=1)
@@ -132,12 +135,13 @@ def distrib_restaurant_regimes(request):
 
 # Bakari 
 def plotly_bar_chart(request):
+    df = data_frame.copy()
     # Compter le nombre de restaurants pour chaque type de cuisine
-    france_df = data_frame[data_frame['country'] == 'France']
+    france_df = df[df['country'] == 'France']
     cuisine_counts = france_df['cuisines'].value_counts().nlargest(10)
 
     # Filtrer le DataFrame pour inclure seulement les 10 types de cuisine les plus fréquents
-    filtered_df = data_frame[data_frame['cuisines'].isin(cuisine_counts.index)]
+    filtered_df = df[df['cuisines'].isin(cuisine_counts.index)]
 
     # Grouper les données filtrées par type de cuisine
     grouped_data = filtered_df.groupby('cuisines').agg({
@@ -164,8 +168,9 @@ def plotly_bar_chart(request):
         })
 
 def box_plot_service(request):
-    # Utilisation de data_frame au lieu de df
-    melted_df = pd.melt(data_frame, id_vars=['price_level'], value_vars=['service'],
+    df = data_frame.copy()
+    # Utilisation de df au lieu de df
+    melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['service'],
                         var_name='Niveau de Satisfaction', value_name='Note')
 
     # Définir un dictionnaire pour la correspondance des couleurs
@@ -194,8 +199,9 @@ def box_plot_service(request):
         })
 
 def box_plot_value(request):
-    # Utilisation de data_frame au lieu de df
-    melted_df = pd.melt(data_frame, id_vars=['price_level'], value_vars=['value'],
+    df = data_frame.copy()
+    # Utilisation de data_frame.copy() au lieu de df
+    melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['value'],
                         var_name='Niveau de Satisfaction', value_name='Note')
 
     # Définir un dictionnaire pour la correspondance des couleurs
@@ -223,8 +229,9 @@ def box_plot_value(request):
         })
 
 def box_plot_atmosphere(request):
-    # Utilisation de data_frame au lieu de df
-    melted_df = pd.melt(data_frame, id_vars=['price_level'], value_vars=['atmosphere'],
+    df = data_frame.copy()
+    # Utilisation de data_frame.copy() au lieu de df
+    melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['atmosphere'],
                         var_name='Niveau de Satisfaction', value_name='Note')
 
     # Définir un dictionnaire pour la correspondance des couleurs
@@ -255,21 +262,22 @@ def box_plot_atmosphere(request):
 # Kemo 
 
 def noteMoyenneNbreRestau(request): 
+    df = data_frame.copy()
     # adding manually the country code - required for the geographical mapping with plotly
     countries_dict = {'Austria': 'AUT', 'Belgium': 'BEL', 'Bulgaria': 'BGR', 'Croatia': 'HRV', 'Czech Republic': 'CZE',
                     'Denmark': 'DNK', 'England': 'GBR', 'Finland': 'FIN', 'France': 'FRA', 'Germany': 'DEU',
                     'Greece': 'GRC', 'Hungary': 'HUN', 'Ireland': 'IRL', 'Italy': 'ITA', 'Northern Ireland': 'GBR',
                     'Poland': 'POL', 'Portugal': 'PRT', 'Romania': 'ROU', 'Scotland': 'GBR', 'Slovakia': 'SVK',
                     'Spain': 'ESP', 'Sweden': 'SWE', 'The Netherlands': 'NLD', 'Wales': 'GBR'}
-    data_frame['country_code'] = data_frame['country'].map(countries_dict).fillna(data_frame['country'])
+    df['country_code'] = df['country'].map(countries_dict).fillna(df['country'])
 
     # average price in euro
-    data_frame['minimum_range'] = pd.to_numeric(data_frame['price_range'].to_string().split('-')[0].replace('€', '').replace(',', ''), errors='coerce')
-    data_frame['maximum_range'] = pd.to_numeric(data_frame['price_range'].to_string().split('-')[1].replace('€', '').replace(',', ''), errors='coerce')
-    data_frame['avg_price'] = (data_frame['minimum_range'] + data_frame['maximum_range'])/2
+    df['minimum_range'] = pd.to_numeric(df['price_range'].to_string().split('-')[0].replace('€', '').replace(',', ''), errors='coerce')
+    df['maximum_range'] = pd.to_numeric(df['price_range'].to_string().split('-')[1].replace('€', '').replace(',', ''), errors='coerce')
+    df['avg_price'] = (df['minimum_range'] + df['maximum_range'])/2
 
     # aggregating the data to find insights from the TripAdvisor dataset
-    agg_countries_df = data_frame.groupby('country').agg(
+    agg_countries_df = df.groupby('country').agg(
         total_restaurants=pd.NamedAgg(column='restaurant_link', aggfunc=np.size),
         mean_rating=pd.NamedAgg(column='avg_rating', aggfunc=np.mean),
         mean_food=pd.NamedAgg(column='food', aggfunc=np.mean),
@@ -334,9 +342,9 @@ def round_decimals_up_or_down(direction:str, number:float, decimals:int=2):
         raise ValueError('direction needs to be up or down')
 
 def radar_chart(request):
-
+    df = data_frame.copy()
     # Compter le nombre de restaurants par pays
-    restaurant_counts = data_frame['country'].value_counts()
+    restaurant_counts = df['country'].value_counts()
 
     # Sélectionner les 8 pays ayant le plus grand nombre de restaurants
     top8_countries = restaurant_counts.nlargest(8).index
@@ -349,7 +357,7 @@ def radar_chart(request):
         'value': 'Value',
         'atmosphere': 'Athmosphere'
     }
-    top8_countries_df = data_frame[data_frame['country'].isin(top8_countries)]
+    top8_countries_df = df[df['country'].isin(top8_countries)]
     top8_countries_df = top8_countries_df[list(country_agg_cols_dict.keys())]
     top8_countries_df.rename(columns=country_agg_cols_dict, inplace=True)
     # melting the various categories, so that the line_polar graph can be easily called

@@ -21,7 +21,6 @@ const CardDetails = ({ url }) => {
                 setLoading(true)
                 const { data } = await axios.get(`${url}`)
                 setData(data)
-                console.log(data);
                 setLoading(false)
             } catch (err) {
                 setLoading(false)
