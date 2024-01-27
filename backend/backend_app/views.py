@@ -45,7 +45,9 @@ def plotly_histogram(request):
         "data": graphJSON, 
         "title": "Nombre de restaurants par pays",
         "content": """
-            Nombre de restaurants par pays 
+            L'Italie possède le plus grand nombre de restaurants parmi les pays listés, suivi de la France et de l'Espagne. Les autres pays ont significativement moins de restaurants comparés à ces trois premiers, avec des nombres qui diminuent progressivement. Les pays comme le Danemark, la République Tchèque, la Hongrie, la Pologne, la Roumanie, la Finlande, la Bulgarie et la Slovaquie ont les nombres les plus faibles dans cet ensemble de données.
+            <br>
+            On remarque que l'Italie, la France et l'Espagne pourraient être des destinations populaires pour la gastronomie ou que ces pays ont une culture de restauration plus prononcée. Cela pourrait aussi refléter des facteurs socio-économiques, touristiques ou démographiques qui influencent le nombre de restaurants. 
         """
         })
 
@@ -130,7 +132,12 @@ def distrib_restaurant_regimes(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Distribution des restaurants spécifiques aux régimes",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        Cette dataviz est une carte représentant la moyenne d’adaptation par restaurant dans les pays d’Europe. Ici chaque point représente un pays, sa couleur représente la moyenne des adaptations des restaurants par pays et la taille correspond au nombre de restaurant par pays.<br>
+        On remarque ici que les pays qui possédaient le plus de restaurant proposant des adaptations diététiques n’en ont pas une proportion si élevée par rapport au nombre total de restaurant dans le pays, Par exemple l’Italie et l’Espagne qui possédaient le plus de restaurant ayant des adaptations diététiques font finalement partie des pays ayant la plus petite part de restaurant ayant des adaptations diététiques. <br>
+        Dans le même temps on remarque que l’Angleterre reste parmi les pays ayant en moyenne le plus d’adaptation diététique dans leur restaurant avec la Grèce ce qui peut être expliquer par leur forte utilisation de fruit et de légume dans leurs plats.<br>
+        La France au contraire qui était un des pays avec le plus d’adaptation diététiques est finalement un des pays ayant un faible part d’adaptation diététique dans ces restaurants.
+        """
         })
 
 # Bakari 
@@ -168,7 +175,12 @@ def plotly_bar_chart(request):
     return JsonResponse({
         "data": graphJSON,
         "title": "Rapport Qualité-Prix des 10 Types de Cuisine sur le Top 8",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        Cette visualisation représente les 10 types de restaurants (cuisines) les plus répandus au sein des 8 pays où l’on trouve le plus de restaurants en Europe. <br>
+        Sur l’axe des abscisses se trouvent les types de cuisines, sur l’axe des ordonnées le rapport qualité-prix moyen (Hauteur des barres, allant de 0 à 5) et le dégradée de couleur représente la note moyenne de chacun de ses types de cuisine. <br>
+        On observe que les restaurants bars sont ceux qui ont le rapport qualité-prix moyen le plus haut et la note moyenne la plus. Les restaurants chinois bien que relativement appréciés, pour leur rapport qualité-prix, sont ceux qui ont les notes globales les plus basses. <br>
+        Globalement le rapport qualité prix moyen des restaurants les plus populaires dans les pays contenant le plus de restaurant en Europe est similaire, les valeurs sont regroupées autour de la note 4. De plus il semble y avoir une corrélation claire entre la note générale, et la note évaluant le rapport qualité-prix d’un restaurant. 
+        """
         })
 
 def box_plot_service(request):
@@ -199,7 +211,14 @@ def box_plot_service(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Distribution des Niveaux de Satisfaction par Niveau de Prix",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        (Notée de 1 à 5, par pas de 0,5) <br><br>
+        Ce graphique représente les distributions de qualité de service par rapport aux niveaux de prix. <br>
+        La qualité de service a une médiane similaire pour les trois niveaux de prix, se situant autour de 4 sur une échelle de 5 mais est légèrement plus élevée pour les niveaux de prix (€€€€). La variabilité de la qualité de service (représentée par la hauteur de la boîte et la longueur des moustaches) semble être similaire pour les catégories de prix les plus élevées (€€€€ et €€-€€€), tandis que la catégorie de prix la plus basse (€) semble avoir une variabilité légèrement plus faible. <br>
+        Cela suggère que les restaurants les moins chères ont des qualités de service similaires. Il existe des valeurs aberrantes dans les trois catégories, indiquant des cas où la qualité de service était nettement inférieure à la médiane.<br>
+        Il est intéressant de noter que le niveau de service perçu ne semble pas augmenter de façon drastique avec le niveau de prix, suggérant que payer plus cher ne garantit pas nécessairement une meilleure qualité de service selon notre jeu de données.
+
+        """
         })
 
 def box_plot_value(request):
@@ -229,7 +248,13 @@ def box_plot_value(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Rapport qualité-prix par niveau de prix",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        (Notée de 1 à 5, par pas de 0,5) <br><br>
+        Ce graphique représente les distributions de rapport qualité-service des restaurants par rapport aux niveaux de prix. <br>
+        On constate que la ligne médiane, qui coupe la boîte en son centre, indique une valeur médiane assez proche entre les trois catégories de prix. Cela suggère que la perception du rapport qualité-prix reste relativement stable quel que soit le montant dépensé. <br>
+        Les boîtes sont équivalentes entre pour les niveaux de prix les plus élevés (€€€€) et les niveaux de prix moyens (€€-€€€). Cependant, la position de la boite est plus haute de 0,5 point pour les restaurants ayant les niveaux de prix les plus faibles (€). Ce qui indique comme nous aurions pu nous y attendre, que les niveaux de satisfaction sont plus élevés pour ceux-ci. <br>
+        Enfin, les valeurs aberrantes, représentées par les points situés en dehors des moustaches, mettent en lumière des cas où le rapport qualité-prix a été jugé nettement insatisfaisant, malgré un nombre limité de ces occurrences dans les catégories de prix les moins chères et moyennes.
+        """
         })
 
 def box_plot_atmosphere(request):
@@ -260,7 +285,14 @@ def box_plot_atmosphere(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Evalutation de l'ambiance par niveau de prix",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        (Notée de 1 à 5, par pas de 0,5) <br><br>
+        Ce graphique représente les distributions de qualité de l’atmosphère (ambiance) par rapport aux niveaux de prix. <br>
+        L'atmosphère, tout comme les précédentes mesures de qualité de service et de rapport qualité-prix, est évaluée sur une échelle de 1 à 5. La médiane, contrairement à ce que l’on pouvait s’y attendre est la même dans tous les restaurants. Elle, est constante à travers les autres niveaux de prix. <br>
+        Les quartiles, qui déterminent la hauteur de chaque boîte, montrent une variabilité plus importante pour le niveau de prix moyens (€€-€€€), ce qui indique une plus grande diversité dans les opinions sur l'atmosphère et la qualité de l’ambiance perçue. <br>
+        Les valeurs aberrantes se situent bien en dessous de la médiane pour les catégories de prix élevées (€€€€), montrant que certains clients ont évalué l'atmosphère de manière beaucoup plus négative par rapport aux autres et que du fait du prix s’attendent à une expérience plus qualitative. <br>
+        Globalement, cette visualisation suggère que, bien que l'atmosphère soit en général jugée de manière stable à travers les différentes gammes de prix, il existe des expériences nettement insatisfaisantes, surtout dans les établissements moins chers et ceux de gamme moyenne. 
+        """
         })
 
 # Kemo 
@@ -322,7 +354,13 @@ def noteMoyenneNbreRestau(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Note moyenne et nombre total de restaurants dans les 20 premières villes européennes (taille en fonction de la médiane)",
-        "content": "Number of Restaurants per Country"
+        "content": """
+        Nous avons un graphique, un nuage de point, représentant le nombre total de restaurants dans un pays donnée en faisant la relation avec la note moyenne des restaurants dans 20 pays européens. Les pays sont espacés le long de l'axe des abscisses en fonction du nombre de restaurants présents sur leur sol. Les notes semblent varient entre  3,8 et 4,2 (approximativement), ce qui nous laiss penser que la qualité des restaurants est globalement élevée dans l'ensemble. La taille des points, dans le nuage, représentent la médiane des notes. <br> <br>
+        Il y a une concentration notable de pays avec un nombre plus restreint de restaurants affichant des notes moyennes légèrement supérieures. Cette tendance est visible par les nombreux points regroupés dans la partie supérieure gauche du graphique, indiquant que des pays moins saturées en termes de nombre de restaurants pourraient offrir une qualité globalement meilleure.<br>
+        Les pays qui se caractérisent par un grand nombre de restaurants, maintiennent des notes moyennes autour ou légèrement au-dessus de la moyenne. Cela suggère que, malgré une grande quantité d'offres, ces marchés parviennent à conserver un niveau de qualité satisfaisant. <br>
+        Des pays comme la Grèce et l'Irlande, bien qu'ayant moins de restaurants, se distinguent par des notes moyennes particulièrement élevées. Cela peut être le reflet d'une qualité exceptionnelle ou d'une expérience culinaire qui répond très bien aux attentes des clients dans ces localités. <br>
+        En conclusion, ce graphique indique qu'une bonne satisfaction cliente peut être atteinte même s'il existe beaucoup de restaurants, elle permet aussi de noter que les pays avec moins de restaurants présent sur leur sol, peuvent représenter des opportunités (pour des investisseurs par exemple). 
+        """
     })
 
 def round_decimals_up_or_down(direction:str, number:float, decimals:int=2):
@@ -386,6 +424,16 @@ def radar_chart(request):
     return JsonResponse({
         "data": graphJSON, 
         "title": "Notes Globales du top 8",
-        "content": "Number of Restaurants per Country"
+        "content": """
+            Nous avons un diagramme qui va faire une comparaison sur les notes globales de 8 pays européen en fonction de catégories qualités. On peut voir que la France affiche des résultats assez élevées de manière globale sur l'ensemble des catégories. L'Allemagne et L'Espagne montre quant à eux des résultats assez équivalentes. <br>
+            Ensuite, nous pouvons observer que l'Angleterre présente des notes inférieurs, cela nous indique le niveau de la cuisine qui est proposée en Angleterre et peut présenter les axes d'améliorations pour chaque catégorie. <br>
+            Enfin, la Belgique, la Grèce et le Portugal présentent des résultats qui sont assez éparpillés, dans le sens où, dans certaines catégories leur note est plutôt élévé et dans d'autres moins.  <br>
+
+            Ce Radar chart nous permet d'avoir une vue globale sur la performance de huit pays européens dans le secteur de la restauration, en fonction de quatre catégories de qualité qui sont le Nourriture, l'Atmosphère, le Service, la Valeur et une note générale. La France et l'Italie semblent offrir les meilleures expériences en termes de Nourriture, tandis que l'Espagne offre la meilleure Valeur. L'Angleterre pourrait chercher à améliorer son offre culinaire et son atmosphère pour se rapprocher des autres pays. <br>
+
+            Un pays avec une forme équilibrée aurait une performance plus constante à travers les catégories, tandis que des pointes indiquent des forces dans des domaines spécifiques. <br>
+
+            On peut donc dire que, ce graphique fournit une comparaison visuelle rapide à un utilisateur quelconque, comme les professionnels de la restauration ou les organismes de tourisme ou encore un utilisateur visitant un pays, à identifier les domaines où les pays perfoment et les opportunités d'amélioration dans l'expérience culinaire qu'ils offrent. <br>
+        """
     })
 

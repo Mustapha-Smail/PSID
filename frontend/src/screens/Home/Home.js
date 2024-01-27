@@ -1,7 +1,6 @@
 import React from 'react'
-import './Home.css'
 import Grid from '@mui/system/Unstable_Grid'
-import { TopNav, CardGraph, CardDetails } from '../../components'
+import { Footer, Header, Main, TopNav } from '../../components'
 
 const Home = () => {
 
@@ -9,38 +8,14 @@ const Home = () => {
         <>
             <TopNav />
             <Grid container spacing={2} p={5}>
-                <CardDetails url={`numbers`} />
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`restaurants-country`} />
+                <Grid lg={12}>
+                    <Header />
                 </Grid>
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`price-diet`} />
+                <Grid lg={12}>
+                    <Main />
                 </Grid>
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`popularity-diet`} />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`distribution-restaurants`} />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`note-top-eight`} />
-                </Grid>
-                <Grid xs={12} md={6}>
-                    <CardGraph url={`distribution-satisfaction`} />
-                </Grid>
-                <Grid xs={12} md={12} container>
-                    <Grid xs={12} md={4}>
-                        <CardGraph url={`plot-service`} />
-                    </Grid>
-                    <Grid xs={12} md={4}>
-                        <CardGraph url={`plot-value`} />
-                    </Grid>
-                    <Grid xs={12} md={4}>
-                        <CardGraph url={`plot-atmosphere`} />
-                    </Grid>
-                </Grid>
-                <Grid xs={12} md={12}>
-                    <CardGraph url={`note-moyenne-restaurants`} />
+                <Grid lg={12}>
+                    <Footer />
                 </Grid>
             </Grid>
         </>

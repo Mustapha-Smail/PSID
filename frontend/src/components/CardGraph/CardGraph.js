@@ -7,7 +7,7 @@ import ArrowRightIcon from '@heroicons/react/24/solid/ArrowRightIcon'
 import PopupData from '../Elements/PopupData'
 import Popup from 'reactjs-popup';
 
-const CardGraph = ({ url }) => {
+const CardGraph = ({ url, details }) => {
     const [plotData, setPlotData] = useState(null)
     const [plotTitle, setPlotTitle] = useState("")
     const [plotContent, setPlotContent] = useState("")
@@ -59,39 +59,43 @@ const CardGraph = ({ url }) => {
                     }
                 </Stack>
             </CardContent>
-            <Divider />
-            <CardActions sx={{ justifyContent: 'flex-end' }}>
-                {plotData && (<Popup
-                    trigger={
-                        <Button
-                            color="inherit"
-                            endIcon={(
-                                <SvgIcon fontSize="small">
-                                    <ArrowRightIcon />
-                                </SvgIcon>
-                            )}
-                            size="small"
+            {details && (
+                <>
+                    <Divider />
+                    <CardActions sx={{ justifyContent: 'flex-end' }}>
+                        {plotData && (<Popup
+                            trigger={
+                                <Button
+                                    color="inherit"
+                                    endIcon={(
+                                        <SvgIcon fontSize="small">
+                                            <ArrowRightIcon />
+                                        </SvgIcon>
+                                    )}
+                                    size="small"
+                                >
+                                    Détails
+                                </Button>
+                            }
+                            modal
+                            nested
+                            contentStyle={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
                         >
-                            Détails
-                        </Button>
-                    }
-                    modal
-                    nested
-                    contentStyle={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    {close => (
-                        <PopupData
-                            close={close}
-                            title={plotTitle}
-                            content={plotContent}
-                        />
-                    )}
-                </Popup>)}
-            </CardActions>
+                            {close => (
+                                <PopupData
+                                    close={close}
+                                    title={plotTitle}
+                                    content={plotContent}
+                                />
+                            )}
+                        </Popup>)}
+                    </CardActions>
+                </>
+            )}
         </Card>
     )
 }

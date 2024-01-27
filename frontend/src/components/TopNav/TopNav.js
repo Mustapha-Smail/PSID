@@ -7,7 +7,9 @@ import {
     Stack,
     SvgIcon,
     Tooltip,
+    Typography,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const SIDE_NAV_WIDTH = 0;
 const TOP_NAV_HEIGHT = 64;
@@ -46,18 +48,44 @@ const TopNav = (props) => {
                         direction="row"
                         spacing={2}
                     >
-                        {/* <IconButton>
-                            <SvgIcon fontSize="small">
-                                <Bars3Icon />
-                            </SvgIcon>
-                        </IconButton> */}
-                        <Tooltip title="Search">
-                            <IconButton>
-                                <SvgIcon fontSize="medium">
-                                    <MagnifyingGlassIcon />
-                                </SvgIcon>
-                            </IconButton>
-                        </Tooltip>
+                        <IconButton>
+                            {/* <SvgIcon fontSize="meduim"> */}
+                            <img
+                                srcSet={'/logo_transparent.png'}
+                                src={'/logo_transparent.png'}
+                                loading='lazy'
+                                style={{ width: '60px' }}
+                            />
+                            {/* </SvgIcon> */}
+                        </IconButton>
+                    </Stack>
+                    <Stack
+                        alignItems="center"
+                        direction="row"
+                        justifyContent="space-between"
+                        spacing={2}
+                        sx={{
+                            px: 2
+                        }}
+                    >
+                        <Typography>
+                            <Link style={{
+                                color: 'black',
+                                textDecoration: 'none',
+                            }}
+                                to='/'>
+                                Accueil
+                            </Link>
+                        </Typography>
+                        <Typography>
+                            <Link style={{
+                                color: 'black',
+                                textDecoration: 'none',
+                            }}
+                                to='/dashboard'>
+                                Dashboard
+                            </Link>
+                        </Typography>
                     </Stack>
                     <Stack
                         alignItems="center"
