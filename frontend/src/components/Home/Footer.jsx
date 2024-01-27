@@ -34,10 +34,10 @@ const Footer = () => (
           <p>Dashboard</p>
         </Link>
         <Link
-          href='#'
+          href='/details'
           style={{ textDecoration: 'none', color: 'black' }}
         >
-          <p>Contact</p>
+          <p>Details</p>
         </Link>
       </div>
       <div className='st__footer-links_div'>

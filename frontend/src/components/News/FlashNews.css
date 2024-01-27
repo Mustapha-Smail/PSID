@@ -1,0 +1,30 @@
+.flash-news-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 10px 0;
+  border-radius: 10px;
+  box-shadow: 0px 5px 22px rgba(0, 0, 0, 0.03),
+    0px 0px 0px 0.5px rgba(0, 0, 0, 0.05);
+}
+
+.flash-news {
+  display: inline-block;
+  max-height: 100px;
+  padding-left: 100%;
+  animation: scroll-left 25s linear infinite;
+}
+
+.flash-news:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
