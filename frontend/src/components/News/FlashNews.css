@@ -13,7 +13,7 @@
   display: inline-block;
   max-height: 100px;
   padding-left: 100%;
-  animation: scroll-left 25s linear infinite;
+  animation: scroll-left 50s linear infinite;
 }
 
 .flash-news:hover {

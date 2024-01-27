@@ -15,8 +15,7 @@ const Footer = () => (
         />
         {/* </h1> */}
         <p>
-          Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-          consectetur, adipisci velit..
+          {/* Make food data worth */}
         </p>
       </div>
       <div className='st__footer-links_div'>
