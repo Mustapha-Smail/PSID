@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './Blog.css'
 const Blog = () => {
     return (
@@ -32,7 +33,19 @@ const Blog = () => {
                             <summary>
                                 Les pays ayant le plus de restaurants proposant des adaptations diététiques ne sont pas forcément ceux dont la part est la plus élevée.
                             </summary>
-                            La carte "Distribution des restaurants spécifiques au régimes" nous montre que contrairement à ce que nous avait fait penser le diagramme "Adaptations diététiques dans les restaurants par pays", les pays ayant le plus de restaurants proposant des adaptations diététiques ne sont pas forcément ceux dont la part est la plus élevée. Par exemple, la France est l’un des pays ayant le plus d’adaptation diététique mais sa part en prenant le nombre total de restaurants est l’une des plus faibles d’europe <br />
+                            <span>La carte </span>
+                            <span>
+                                <Link to={'/dashboard#distribution-restaurants'}>
+                                    "Distribution des restaurants spécifiques au régimes"
+                                </Link>
+                            </span>
+                            <span> nous montre que contrairement à ce que nous avait fait penser le diagramme </span>
+                            <span>
+                                <Link to={'/dashboard#price-diet'}>
+                                    "Adaptations diététiques dans les restaurants par pays"
+                                </Link>
+                            </span>
+                            <span>, les pays ayant le plus de restaurants proposant des adaptations diététiques ne sont pas forcément ceux dont la part est la plus élevée. Par exemple, la France est l’un des pays ayant le plus d’adaptation diététique mais sa part en prenant le nombre total de restaurants est l’une des plus faibles d’europe </span><br />
                             On remarque aussi que certains pays qui n’ont pas énormément de restaurants proposent tout de même plus d’adaptation en moyenne ce qui montre que le régime alimentaire entre en compte dans les adaptations des restaurants.
                         </details>
                     </div>

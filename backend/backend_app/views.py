@@ -166,7 +166,7 @@ def plotly_bar_chart(request):
 
     # Créer un graphique en barres avec un filtre de couleur basé sur la note moyenne
     fig = px.bar(grouped_data, x='cuisines', y='value', color='avg_rating',
-                title='Rapport Qualité-Prix des 10 Types de Cuisines principales sur du Top 8',
+                title='Rapport Qualité-Prix des Top 10 Types de Cuisines dans le Top 8',
                 labels={'cuisines' : 'Type de cuisine', 'value': 'Rapport Qualité-Prix moyen', 'avg_rating': 'Note Moyenne'})
 
     # Convertir le graphique en JSON
