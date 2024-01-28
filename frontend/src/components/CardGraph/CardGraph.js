@@ -6,6 +6,7 @@ import Plot from 'react-plotly.js'
 import ArrowRightIcon from '@heroicons/react/24/solid/ArrowRightIcon'
 import PopupData from '../Elements/PopupData'
 import Popup from 'reactjs-popup';
+import InfoIcon from '@mui/icons-material/Info';
 
 const CardGraph = ({ url, details }) => {
     const [plotData, setPlotData] = useState(null)
@@ -34,7 +35,7 @@ const CardGraph = ({ url, details }) => {
     }, [url])
 
     return (
-        <Card sx={{ borderRadius: '20px', height: '100%', boxShadow: '0px 5px 22px rgba(0, 0, 0, 0.04), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.03)', display: 'flex', flexDirection: 'column' }}>
+        <Card sx={{ borderRadius: '20px', minHeight: '500px', boxShadow: '0px 5px 22px rgba(0, 0, 0, 0.04), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.03)' }}>
             <CardContent>
                 <Stack spacing={1}>
                     {error && <Alert severity="error">{error.message}</Alert>}
@@ -43,19 +44,20 @@ const CardGraph = ({ url, details }) => {
                             <CircularProgress />
                         </Stack>
                         :
-                        plotData && (
-                            <Plot
-                                data={plotData.data}
-                                layout={{
-                                    ...plotData.layout,
-                                    autosize: true,
-                                    title: plotData.layout.title,
-                                    responsive: true,
-                                }}
-                                useResizeHandler={true}
-                                config={{ responsive: true }} />
-
-                        )
+                        <Stack>
+                            {plotData && (
+                                <Plot
+                                    data={plotData.data}
+                                    layout={{
+                                        ...plotData.layout,
+                                        autosize: true,
+                                        title: plotData.layout.title,
+                                        responsive: true,
+                                    }}
+                                    useResizeHandler={true}
+                                    config={{ responsive: true }} />
+                            )}
+                        </Stack>
                     }
                 </Stack>
             </CardContent>
@@ -67,14 +69,9 @@ const CardGraph = ({ url, details }) => {
                             trigger={
                                 <Button
                                     color="inherit"
-                                    endIcon={(
-                                        <SvgIcon fontSize="small">
-                                            <ArrowRightIcon />
-                                        </SvgIcon>
-                                    )}
                                     size="small"
                                 >
-                                    Détails
+                                    <InfoIcon />
                                 </Button>
                             }
                             modal

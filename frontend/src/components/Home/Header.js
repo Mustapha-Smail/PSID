@@ -12,11 +12,11 @@ const Header = () => {
                     Découvrez l'Europe à travers la donnée
                 </h1>
                 <p>
-                    Explorez les tendances culinaires et les palais diversifiés avec notre tableau de bord interactif sur les restaurants européens.
+                    Explorez les tendances culinaires et aiguisez votre palais avec notre tableau de bord interactif sur les restaurants européens.
                 </p>
 
                 <div className="st__header-content__input">
-                    <button type="button" onClick={() => navigate('/dashboard')}>C'est parti!</button>
+                    <button type="button" onClick={() => navigate('/dashboard')}>C'est parti !</button>
                 </div>
 
             </div>

@@ -21,7 +21,7 @@ const Graphes = () => {
                 >
                     <Feature
                         title="L'Europe, un buffet de cultures"
-                        text="En Europe, la gastronomie est un regroupement d'origine, de saveurs et d'expériences, reflétant la richesse culturelle de chaque nation. Au cœur de ce paysage culinaire, la France possède le plus grand nombre de restaurants, ce qui peut montrer une tradition gastronomique  enracinée. Cependant, ce n'est pas seulement une question de quantité ; on peut voir que la diversité alimentaire y est également manifeste, avec une multitude d'options répondant aux besoins des végétariens, des végans et de ceux qui suivent un régime sans gluten."
+                        text="En Europe, la gastronomie est un regroupement d'origine, de saveurs et d'expériences, reflétant la richesse culturelle de chaque nation. Au cœur de ce paysage culinaire, l'Italie possède le plus grand nombre de restaurants, ce qui peut montrer une tradition gastronomique enracinée. Cependant, ce n'est pas seulement une question de quantité ; on peut voir que la diversité alimentaire y est également manifeste, avec une multitude d'options répondant aux besoins des végétariens, des végans et de ceux qui suivent un régime sans gluten."
                     />
                 </Grid>
                 <Grid
@@ -60,7 +60,7 @@ const Graphes = () => {
                 >
                     <Feature
                         // title='Deuxième Graphe'
-                        text="Cela ne se reflète pas nécessairement dans une augmentation des avis ou des évaluations, mais c'est un point que les clients considèrent maintenant dans leur notation."
+                        text="Cela ne se reflète pas nécessairement dans une augmentation des avis ou des évaluations, mais c'est un sujet que les clients considèrent maintenant dans leur notation."
                     />
                 </Grid>
             </Grid>
@@ -82,8 +82,8 @@ const Graphes = () => {
                     md={4}
                 >
                     <Feature
-                        title='La qualité au-delà du prix'
-                        text="Si nous prenons l'exemple des cuisines les plus fréquentes en Europe, on découvre que le rapport qualité-prix ne discrimine pas selon l'origine de la cuisine. Des cuisines aussi variées que la marocaine, l'indienne, et la japonaise tiennent tête à la prestigieuse gastronomie française, avec l'italienne se distinguant particulièrement pour son rapport qualité-prix. "
+                        title='Le meilleur rapport qualité-prix'
+                        text="Si nous prenons l'exemple des cuisines les plus fréquentes en Europe, on découvre que le rapport qualité-prix ne discrimine pas selon l'origine de la cuisine. Des cuisines aussi variées que la cuisine marocaine, indienne, et la japonaise tiennent tête à la prestigieuse gastronomie française, avec la cuisine indienne se distinguant particulièrement pour son rapport qualité-prix. "
                     />
                 </Grid>
             </Grid>

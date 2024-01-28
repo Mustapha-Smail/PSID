@@ -1,0 +1,24 @@
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  box-shadow: 0px 5px 22px rgb(211, 48, 47), 0px 0px 0px 0.5px rgb(211, 48, 47);
+  border-radius: 20px;
+  animation: shake 0.5s; /* Adjust timing as needed */
+  animation-iteration-count: infinite; /* Loop forever or set a specific number */
+}
