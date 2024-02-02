@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import pymysql
+pymysql.install_as_MySQLdb()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -89,8 +91,12 @@ CSV_FILE = os.getenv('CSV_FILE', '/Users/mustapha/Desktop/M2MIAGE/PSID/webApp/ba
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'psid',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',  # Use your MySQL server's hostname or IP address
+        'PORT': '3306',       # MySQL default port
     }
 }
 

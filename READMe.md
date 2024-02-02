@@ -9,13 +9,43 @@ cd backend
 - installer les librairies
 
 ```{shell}
-pip install django djangorestframework matplotlib plotly python-dotenv pandas graphviz numpy 
+pip install mysqlclient django djangorestframework matplotlib plotly python-dotenv pandas graphviz numpy
 ```
+
+- Si problème d'installations de mysqlclient verifiez la [documentation](https://pypi.org/project/mysqlclient/)
 
 - aller dans le fichier .env **backend/.env** et modifier le path de ton fichier csv
 
 ```{env}
 CSV_FILE=PATH/TO/CSV/FILE
+```
+
+- aller dans **backend/backend/settings.py** et mettre à jour les infos de la BD
+
+```{python}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'psid',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',  # Use your MySQL server's hostname or IP address
+        'PORT': '3306',       # MySQL default port
+    }
+}
+```
+
+- lancer les migrations
+
+```{shell}
+python manage.py makemigrations
+python manage.py migrate
+```
+
+- lancer les insertions
+
+```{shell}
+python manage.py insert_data
 ```
 
 - demarrer l'application

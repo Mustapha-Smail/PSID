@@ -5,9 +5,12 @@ import math
 import json
 from django.http import JsonResponse
 import pandas as pd
-from .data.load_data import data_frame
+from .data import select_data
 import numpy as np
 from collections import defaultdict
+
+global data_frame
+data_frame=select_data.load_data_db()
 
 # Numbers
 def numRestaurants(request): 
