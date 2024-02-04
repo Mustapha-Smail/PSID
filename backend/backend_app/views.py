@@ -5,16 +5,111 @@ import math
 import json
 from django.http import JsonResponse
 import pandas as pd
-from .data import select_data
 import numpy as np
-from collections import defaultdict
+from django.views.decorators.csrf import csrf_exempt
+from .models import Preference
+from .globals import DATA_FRAME
+from .modal import load_modal
+from django.forms.models import model_to_dict
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
+import json
+import pandas as pd
+from .models import Preference
+# Assuming load_modal and its predict_user_cluster function are defined elsewhere
 
-global data_frame
-data_frame=select_data.load_data_db()
+def get_recommended_restaurants(request):
+    try:
+        # Fetching the preference instance
+        preference = Preference.objects.get(pk=1)
+        
+        preference_dict = model_to_dict(preference, fields=['price_level', 'vegetarian_friendly', 'vegan_options', 'gluten_free', 'avg_rating'])
+
+        data = {key: [value] for key, value in preference_dict.items()}
+        
+        # Creating a DataFrame from the dictionary
+        preference_df = pd.DataFrame(data)
+
+        # Assuming load_modal.predict_user_cluster returns a DataFrame of recommended restaurants
+        recommended_restaurants = load_modal.predict_user_cluster(preferences=preference_df)
+        
+        # Pagination
+        paginator = Paginator(recommended_restaurants.to_dict(orient='records'), 10)  # 10 restaurants per page
+        page_number = request.GET.get('page', 1)
+        try:
+            page_obj = paginator.page(page_number)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
+        # Constructing the response
+        response_data = {
+            'restaurants': list(page_obj.object_list),  # The current page's items
+            'total_pages': paginator.num_pages,  # Total number of pages
+            'current_page': page_number,  # The current page
+            'has_next': page_obj.has_next(),  # Boolean indicating if there's a next page
+            'has_previous': page_obj.has_previous()  # Boolean indicating if there's a previous page
+        }
+
+        return JsonResponse(response_data)
+    except Preference.DoesNotExist:
+        return JsonResponse({'message': 'Preference not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'message': f'Error: {str(e)}'}, status=500)
+
+
+# ML 
+def model(request): 
+    df, K_means = load_modal.train_model()
+    df = df.tail(10)
+    # Convert the DataFrame to JSON
+    data_json = df.to_json(orient='records')
+
+    # Parse the JSON string back into a Python object (list of dictionaries)
+    # This step is necessary because JsonResponse expects a dictionary or list, not a JSON string
+    data_py = json.loads(data_json)
+
+    # Return as JsonResponse
+    return JsonResponse(data_py, safe=False)  
+
+@csrf_exempt
+def preference(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        price_level = data.get('price_level')
+        avg_rating = data.get('avg_rating')
+
+        Preference.objects.all().delete()
+        preference = Preference.objects.create(price_level=price_level, avg_rating=avg_rating)
+        
+        # Update other fields
+        preference.vegetarian_friendly = data.get('vegetarian_friendly', False)
+        preference.vegan_options = data.get('vegan_options', False)
+        preference.gluten_free = data.get('gluten_free', False)
+        preference.save()
+
+
+        return JsonResponse({'message': 'Preference updated successfully'})
+    elif request.method == 'GET':
+        try:
+            preference = Preference.objects.get(pk=1)
+            data = {
+                'price_level': preference.price_level,
+                'vegetarian_friendly': preference.vegetarian_friendly,
+                'vegan_options': preference.vegan_options,
+                'gluten_free': preference.gluten_free,
+                'avg_rating': preference.avg_rating
+            }
+            return JsonResponse(data)
+        except Preference.DoesNotExist:
+            return JsonResponse({'message': 'Preference does not exist'}, status=404)
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 # Numbers
 def numRestaurants(request): 
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     total_restaurants = round(len(df), 2)
     average_rating = round(df['avg_rating'].mean(), 2)
     total_reviews = round(df['total_reviews_count'].sum(), 2)
@@ -35,7 +130,7 @@ def numRestaurants(request):
 
 # Graphs 
 def plotly_histogram(request):
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     country_counts = df['country'].value_counts()
 
     fig = px.bar(country_counts, x=country_counts.index, y=country_counts.values, labels={'country':'Pays', 'y': 'Restaurants'})
@@ -56,7 +151,7 @@ def plotly_histogram(request):
 
 # Thomas 
 def diet_adaptation(request):  
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
 
     df['vegan_gluten_free'] = (df['vegan_options'] == True) & (df['gluten_free'] == True)
@@ -90,7 +185,7 @@ def diet_adaptation(request):
         })
 
 def popularity_diet(request):
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].astype(int)
     df['total_adaptations'] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].sum(axis=1)
@@ -112,7 +207,7 @@ def popularity_diet(request):
         })
 
 def distrib_restaurant_regimes(request):
-    df= data_frame.copy()
+    df= DATA_FRAME.copy()
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].replace({'Y': True, 'N': False})
     df[['vegetarian_friendly', 'vegan_options', 'gluten_free']] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].astype(int)
     df['total_adaptations'] = df[['vegetarian_friendly', 'vegan_options', 'gluten_free']].sum(axis=1)
@@ -145,7 +240,7 @@ def distrib_restaurant_regimes(request):
 
 # Bakari 
 def plotly_bar_chart(request):
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     # Compter le nombre de restaurants par pays
     restaurant_counts = df['country'].value_counts()
     # Sélectionner les 8 pays ayant le plus grand nombre de restaurants
@@ -187,7 +282,7 @@ def plotly_bar_chart(request):
         })
 
 def box_plot_service(request):
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     # Utilisation de df au lieu de df
     melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['service'],
                         var_name='Niveau de Satisfaction', value_name='Note')
@@ -225,8 +320,8 @@ def box_plot_service(request):
         })
 
 def box_plot_value(request):
-    df = data_frame.copy()
-    # Utilisation de data_frame.copy() au lieu de df
+    df = DATA_FRAME.copy()
+    # Utilisation de DATA_FRAME.copy() au lieu de df
     melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['value'],
                         var_name='Niveau de Satisfaction', value_name='Note')
 
@@ -261,8 +356,8 @@ def box_plot_value(request):
         })
 
 def box_plot_atmosphere(request):
-    df = data_frame.copy()
-    # Utilisation de data_frame.copy() au lieu de df
+    df = DATA_FRAME.copy()
+    # Utilisation de DATA_FRAME.copy() au lieu de df
     melted_df = pd.melt(df, id_vars=['price_level'], value_vars=['atmosphere'],
                         var_name='Niveau de Satisfaction', value_name='Note')
 
@@ -301,7 +396,7 @@ def box_plot_atmosphere(request):
 # Kemo 
 
 def noteMoyenneNbreRestau(request): 
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     # adding manually the country code - required for the geographical mapping with plotly
     countries_dict = {'Austria': 'AUT', 'Belgium': 'BEL', 'Bulgaria': 'BGR', 'Croatia': 'HRV', 'Czech Republic': 'CZE',
                     'Denmark': 'DNK', 'England': 'GBR', 'Finland': 'FIN', 'France': 'FRA', 'Germany': 'DEU',
@@ -387,7 +482,7 @@ def round_decimals_up_or_down(direction:str, number:float, decimals:int=2):
         raise ValueError('direction needs to be up or down')
 
 def radar_chart(request):
-    df = data_frame.copy()
+    df = DATA_FRAME.copy()
     # Compter le nombre de restaurants par pays
     restaurant_counts = df['country'].value_counts()
 

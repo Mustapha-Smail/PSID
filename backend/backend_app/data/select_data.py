@@ -1,10 +1,12 @@
 import pandas as pd
 from backend_app.models import Restaurant, DataInsertionStatus
-
+from django.db import connection
 def load_data_db(): 
     # global data_frame
+    insertion_status = False 
 
-    insertion_status = DataInsertionStatus.objects.first()
+    if ('backend_app_datainsertionstatus' in connection.introspection.table_names()):
+        insertion_status = DataInsertionStatus.objects.first()
 
     if insertion_status and insertion_status.has_data_been_inserted:
         # Query the Restaurant table and retrieve all records

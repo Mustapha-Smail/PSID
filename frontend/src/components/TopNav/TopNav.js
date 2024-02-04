@@ -86,6 +86,24 @@ const TopNav = (props) => {
                                 Dashboard
                             </Link>
                         </Typography>
+                        <Typography>
+                            <Link style={{
+                                color: 'black',
+                                textDecoration: 'none',
+                            }}
+                                to='/details'>
+                                Rapport
+                            </Link>
+                        </Typography>
+                        <Typography>
+                            <Link style={{
+                                color: 'black',
+                                textDecoration: 'none',
+                            }}
+                                to='/preference'>
+                                ML
+                            </Link>
+                        </Typography>
                     </Stack>
                     <Stack
                         alignItems="center"

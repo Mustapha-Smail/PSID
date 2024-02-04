@@ -1,4 +1,31 @@
 from django.db import models
+
+class Preference(models.Model): 
+    PRICE_LEVEL_CHOICES = [
+        ('€', '€'),
+        ('€€-€€€', '€€-€€€'),
+        ('€€€€', '€€€€'),
+    ]
+    
+    AVG_RATING_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
+    price_level = models.CharField(max_length=10, choices=PRICE_LEVEL_CHOICES)
+    vegetarian_friendly = models.BooleanField(default=False)
+    vegan_options = models.BooleanField(default=False)
+    gluten_free = models.BooleanField(default=False)
+    avg_rating = models.CharField(max_length=10, choices=AVG_RATING_CHOICES)
+    
+
+    # Override the save method to ensure there is only one record
+    def save(self, *args, **kwargs):
+        self.pk = 1  # Ensure that there is only one record with primary key 1
+        super(Preference, self).save(*args, **kwargs)
+    
 class DataInsertionStatus(models.Model):
     has_data_been_inserted = models.BooleanField(default=False)
 class Restaurant(models.Model):

@@ -2,6 +2,10 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    path('preference/', preference, name='preference'),
+    path('model/', model, name='model'),
+    path('get-restaurants/', get_recommended_restaurants, name='get_recommended_restaurants'),
+
     path('numbers/', numRestaurants, name='numRestaurants'),
     
     path('restaurants-country/', plotly_histogram, name='plotly_histogram'),
