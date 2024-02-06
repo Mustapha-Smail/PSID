@@ -5,6 +5,7 @@ urlpatterns = [
     path('preference/', preference, name='preference'),
     path('model/', model, name='model'),
     path('get-restaurants/', get_recommended_restaurants, name='get_recommended_restaurants'),
+    path('get-regions/', get_regions, name='get_regions'),
 
     path('numbers/', numRestaurants, name='numRestaurants'),
     

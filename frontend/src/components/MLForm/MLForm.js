@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Checkbox, FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import axios from 'axios';
+import MLSelect from './MLSelect';
 
 const MLForm = ({ fetchRestaurants }) => {
     const [formData, setFormData] = useState({
@@ -9,13 +10,17 @@ const MLForm = ({ fetchRestaurants }) => {
         vegan_options: false,
         gluten_free: false,
         avg_rating: '',
+        region: '',
     });
+
+    const [selectedOption, setSelectedOption] = useState(null);
 
     useEffect(() => {
         // Fetch the existing preference data when the component mounts
         axios.get('preference/')
             .then((response) => {
                 setFormData(response.data);
+                setSelectedOption(response.data.region)
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -24,9 +29,9 @@ const MLForm = ({ fetchRestaurants }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const data = { ...formData, 'region': selectedOption.value }
         // Send the form data to your Django server
-        axios.post('preference/', formData)
+        axios.post('preference/', data)
             .then((response) => {
                 if (response.status === 200) {
                     // Success: Preference created
@@ -65,6 +70,10 @@ const MLForm = ({ fetchRestaurants }) => {
                         display: 'flex', alignItems: 'center',
                         gap: '2rem'
                     }}>
+                        <div>
+                            <InputLabel htmlFor="region">Region</InputLabel>
+                            <MLSelect value={selectedOption} onChange={(option) => { setSelectedOption(option) }} />
+                        </div>
                         <div>
                             <InputLabel htmlFor="price_level">Price Level</InputLabel>
                             <Select
@@ -127,7 +136,7 @@ const MLForm = ({ fetchRestaurants }) => {
                     </Grid>
                 </div>
 
-            </form>
+            </form >
         </>
     )
 }
